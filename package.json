@@ -1,15 +1,25 @@
 {
-  "name": "my-cloudflare-website",
-  "version": "1.0.0",
-  "private": true,
+  "name": "cloudsite",
+  "type": "module",
+  "version": "0.0.1",
   "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "wrangler deploy",
-    "tail": "wrangler tail"
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "astro": "astro"
   },
-  "devDependencies": {
-    "@cloudflare/workers-types": "^4.20250207.0",
-    "typescript": "^5.3.3",
-    "wrangler": "^3.91.0"
+  "dependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@astrojs/cloudflare": "^12.0.0",
+    "@astrojs/react": "^3.6.2",
+    "@astrojs/tailwind": "^5.1.1",
+    "@types/react": "^18.0.21",
+    "@types/react-dom": "^18.0.6",
+    "astro": "^4.15.11",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "tailwindcss": "^3.0.24",
+    "typescript": "^5.6.3"
   }
 }
