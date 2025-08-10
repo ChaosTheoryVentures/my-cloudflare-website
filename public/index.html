@@ -18,31 +18,8 @@
             min-height: 100vh;
             position: relative;
             overflow-x: hidden;
-            background: #0a0a0a;
-        }
-
-        /* Custom Background with Purple Flow Waves */
-        .custom-background {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -2;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080"><defs><linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%236b46c1"/><stop offset="50%" style="stop-color:%239333ea"/><stop offset="100%" style="stop-color:%23a855f7"/></linearGradient><linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%2306b6d4"/><stop offset="100%" style="stop-color:%233b82f6"/></linearGradient></defs><rect width="100%" height="100%" fill="url(%23g1)"/><path d="M0,300 Q480,150 960,300 T1920,300 Q1680,450 1440,300 Q1200,150 960,300 Q720,450 480,300 Q240,150 0,300 Z" fill="url(%23g2)" opacity="0.3"/><path d="M0,500 Q320,350 640,500 T1280,500 Q1600,650 1920,500 Q1760,350 1600,500 Q1440,650 1280,500 Q1120,350 960,500 Q800,650 640,500 Q480,350 320,500 Q160,650 0,500 Z" fill="url(%23g2)" opacity="0.2"/></svg>') center/cover fixed,
-                        linear-gradient(135deg, #667eea 0%, #764ba2 50%, #a855f7 100%);
+            background: url('https://export-download.canva.com/978a5486-6469-4457-96cb-28969d108c66/0/0001-3631501860497514436.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAQYCGKMUH5AO7UJ26%2F20250810%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250810T041407Z&X-Amz-Expires=61390&X-Amz-Signature=1c0a5aaa26d955f7bc5d0c60585b5652c2682d57c1d21476267472aa9e190bc9&X-Amz-SignedHeaders=host%3Bx-amz-expected-bucket-owner&response-expires=Sun%2C%2010%20Aug%202025%2021%3A17%3A17%20GMT') center/cover fixed;
             background-attachment: fixed;
-        }
-
-        /* SVG Background Container - Now serves as overlay */
-        .svg-background {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            opacity: 0.6;
         }
 
         .container {
@@ -109,9 +86,8 @@
             font-size: 3rem;
             margin-bottom: 1rem;
             animation: slideUp 0.8s ease;
-            text-shadow: 0 0 40px rgba(102, 126, 234, 0.8),
-                         0 0 20px rgba(118, 75, 162, 0.8),
-                         2px 2px 4px rgba(0, 0, 0, 0.3);
+            text-shadow: 0 0 40px rgba(0, 0, 0, 0.8),
+                         2px 2px 4px rgba(0, 0, 0, 0.5);
         }
 
         .hero p {
@@ -119,8 +95,8 @@
             margin-bottom: 2rem;
             opacity: 0.95;
             animation: slideUp 1s ease;
-            text-shadow: 0 0 20px rgba(102, 126, 234, 0.6),
-                         1px 1px 2px rgba(0, 0, 0, 0.3);
+            text-shadow: 0 0 20px rgba(0, 0, 0, 0.8),
+                         1px 1px 2px rgba(0, 0, 0, 0.5);
         }
 
         .cta-buttons {
@@ -398,68 +374,6 @@
     </style>
 </head>
 <body>
-    <!-- Custom Purple Flow Waves Background -->
-    <div class="custom-background"></div>
-
-    <!-- Dynamic SVG Background Overlay -->
-    <svg class="svg-background" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" viewBox="0 0 1440 800">
-        <defs>
-            <!-- Enhanced Gradients -->
-            <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" style="stop-color:#667eea;stop-opacity:0.6">
-                    <animate attributeName="stop-color" values="#667eea;#764ba2;#a855f7;#667eea" dur="12s" repeatCount="indefinite" />
-                </stop>
-                <stop offset="100%" style="stop-color:#764ba2;stop-opacity:0.6">
-                    <animate attributeName="stop-color" values="#764ba2;#a855f7;#667eea;#764ba2" dur="12s" repeatCount="indefinite" />
-                </stop>
-            </linearGradient>
-            
-            <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" style="stop-color:#60a5fa;stop-opacity:0.4" />
-                <stop offset="100%" style="stop-color:#a78bfa;stop-opacity:0.4" />
-            </linearGradient>
-            
-            <!-- Enhanced Glow Filter -->
-            <filter id="glow">
-                <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
-                <feMerge>
-                    <feMergeNode in="coloredBlur"/>
-                    <feMergeNode in="SourceGraphic"/>
-                </feMerge>
-            </filter>
-        </defs>
-        
-        <!-- Subtle Animated Waves Overlay -->
-        <path d="M0,400 Q360,300 720,400 T1440,400 L1440,800 L0,800 Z" fill="url(#gradient2)" opacity="0.3">
-            <animate attributeName="d" 
-                values="M0,400 Q360,300 720,400 T1440,400 L1440,800 L0,800 Z;
-                        M0,450 Q360,350 720,450 T1440,450 L1440,800 L0,800 Z;
-                        M0,400 Q360,300 720,400 T1440,400 L1440,800 L0,800 Z"
-                dur="15s" repeatCount="indefinite" />
-        </path>
-        
-        <!-- Floating Particles -->
-        <g opacity="0.5">
-            <circle cx="200" cy="200" r="3" fill="white" filter="url(#glow)">
-                <animate attributeName="cx" values="200;300;200" dur="20s" repeatCount="indefinite" />
-                <animate attributeName="cy" values="200;150;200" dur="15s" repeatCount="indefinite" />
-                <animate attributeName="opacity" values="0.3;0.8;0.3" dur="8s" repeatCount="indefinite" />
-            </circle>
-            
-            <circle cx="1200" cy="600" r="4" fill="white" filter="url(#glow)">
-                <animate attributeName="cx" values="1200;1100;1200" dur="25s" repeatCount="indefinite" />
-                <animate attributeName="cy" values="600;650;600" dur="18s" repeatCount="indefinite" />
-                <animate attributeName="opacity" values="0.3;0.7;0.3" dur="10s" repeatCount="indefinite" />
-            </circle>
-            
-            <circle cx="700" cy="400" r="2" fill="white" filter="url(#glow)">
-                <animate attributeName="cx" values="700;750;700" dur="15s" repeatCount="indefinite" />
-                <animate attributeName="cy" values="400;350;400" dur="20s" repeatCount="indefinite" />
-                <animate attributeName="opacity" values="0.2;0.6;0.2" dur="7s" repeatCount="indefinite" />
-            </circle>
-        </g>
-    </svg>
-
     <header>
         <nav>
             <div class="logo">⚡ CloudSite</div>
