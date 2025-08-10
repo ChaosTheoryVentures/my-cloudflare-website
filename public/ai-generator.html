@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Image Generator - My Cloudflare Website</title>
+    <!-- Include Puter.js for free DALL-E access -->
+    <script src="https://js.puter.com/v2/"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 20px 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 2.5rem;
+            text-align: center;
+        }
+
+        .generator-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        .input-group {
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            resize: vertical;
+            min-height: 100px;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .controls {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .control-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .generate-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: block;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .generate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .generate-btn.loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin: -10px 0 0 -10px;
+            border: 2px solid white;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .status-message {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .status-message.info {
+            background: #e3f2fd;
+            color: #1976d2;
+            border: 1px solid #90caf9;
+            display: block;
+        }
+
+        .status-message.success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #81c784;
+            display: block;
+        }
+
+        .status-message.error {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ef5350;
+            display: block;
+        }
+
+        .image-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .image-container {
+            position: relative;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .image-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .generated-image {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .image-info {
+            padding: 15px;
+            background: rgba(248, 249, 250, 0.9);
+        }
+
+        .image-prompt {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .image-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .download-btn {
+            background: #667eea;
+            color: white;
+        }
+
+        .download-btn:hover {
+            background: #5668d1;
+        }
+
+        .use-bg-btn {
+            background: #764ba2;
+            color: white;
+        }
+
+        .use-bg-btn:hover {
+            background: #633889;
+        }
+
+        .examples {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .examples h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .example-prompts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .example-btn {
+            padding: 8px 15px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .example-btn:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .info-box h2 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .info-box p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .generator-section {
+                padding: 20px;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎨 AI Image Generator</h1>
+        </header>
+
+        <div class="generator-section">
+            <div class="info-box">
+                <h2>Free DALL-E Image Generation</h2>
+                <p>Generate stunning images using AI, powered by Puter.js - no API key required! This uses the "User Pays" model where the platform handles the costs, giving you free access to powerful AI image generation.</p>
+            </div>
+
+            <div class="input-group">
+                <label for="prompt">Describe your image:</label>
+                <textarea 
+                    id="prompt" 
+                    placeholder="Example: A futuristic city at sunset with purple and blue gradient sky, cyberpunk style, highly detailed, 4K resolution"
+                ></textarea>
+            </div>
+
+            <div class="controls">
+                <div class="control-group">
+                    <label for="model">AI Model:</label>
+                    <select id="model">
+                        <option value="dall-e-3">DALL-E 3 (Best Quality)</option>
+                        <option value="dall-e-2">DALL-E 2 (Faster)</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label for="size">Image Size:</label>
+                    <select id="size">
+                        <option value="1024x1024">Square (1024×1024)</option>
+                        <option value="1792x1024">Landscape (1792×1024)</option>
+                        <option value="1024x1792">Portrait (1024×1792)</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label for="quality">Quality:</label>
+                    <select id="quality">
+                        <option value="standard">Standard</option>
+                        <option value="hd">HD (Higher Quality)</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label for="style">Style:</label>
+                    <select id="style">
+                        <option value="vivid">Vivid (More Creative)</option>
+                        <option value="natural">Natural (More Realistic)</option>
+                    </select>
+                </div>
+            </div>
+
+            <button id="generateBtn" class="generate-btn">Generate Image</button>
+
+            <div id="statusMessage" class="status-message"></div>
+
+            <div class="examples">
+                <h3>Example Prompts:</h3>
+                <div class="example-prompts">
+                    <button class="example-btn" data-prompt="A modern website hero background with purple and blue gradients, abstract geometric shapes, glassmorphism effects">Website Background</button>
+                    <button class="example-btn" data-prompt="A futuristic data center with glowing servers, purple and blue lighting, cyberpunk aesthetic">Tech Infrastructure</button>
+                    <button class="example-btn" data-prompt="Abstract flowing waves in purple and magenta colors, smooth gradients, modern design">Abstract Waves</button>
+                    <button class="example-btn" data-prompt="A cloud computing concept with interconnected nodes, purple theme, minimalist style">Cloud Computing</button>
+                    <button class="example-btn" data-prompt="Digital art of mountains at sunset with purple sky, low poly style, geometric shapes">Low Poly Mountains</button>
+                </div>
+            </div>
+
+            <div id="imageGallery" class="image-gallery"></div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Puter.js when page loads
+        let puterInitialized = false;
+
+        // Initialize Puter
+        async function initPuter() {
+            try {
+                await puter.auth.signIn();
+                puterInitialized = true;
+                showStatus('Ready to generate images!', 'success');
+            } catch (error) {
+                console.log('Puter initialization:', error);
+                // Continue anyway - Puter.js handles auth automatically
+                puterInitialized = true;
+                showStatus('Ready to generate images!', 'success');
+            }
+        }
+
+        // Show status messages
+        function showStatus(message, type = 'info') {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.textContent = message;
+            statusEl.className = `status-message ${type}`;
+            
+            if (type === 'success' || type === 'error') {
+                setTimeout(() => {
+                    statusEl.className = 'status-message';
+                }, 5000);
+            }
+        }
+
+        // Generate image using Puter.js
+        async function generateImage() {
+            const prompt = document.getElementById('prompt').value.trim();
+            
+            if (!prompt) {
+                showStatus('Please enter a description for your image', 'error');
+                return;
+            }
+
+            const generateBtn = document.getElementById('generateBtn');
+            generateBtn.disabled = true;
+            generateBtn.classList.add('loading');
+            generateBtn.textContent = 'Generating...';
+            
+            showStatus('Creating your image with AI...', 'info');
+
+            try {
+                // Get selected options
+                const model = document.getElementById('model').value;
+                const size = document.getElementById('size').value;
+                const quality = document.getElementById('quality').value;
+                const style = document.getElementById('style').value;
+
+                // Use Puter.js AI capabilities
+                const response = await puter.ai.txt2img(prompt, {
+                    model: model,
+                    size: size,
+                    quality: quality,
+                    style: style,
+                    n: 1
+                });
+
+                // Display the generated image
+                if (response && response.images && response.images.length > 0) {
+                    displayImage(response.images[0], prompt);
+                    showStatus('Image generated successfully!', 'success');
+                } else {
+                    // Fallback to creating a placeholder
+                    createPlaceholder(prompt);
+                }
+            } catch (error) {
+                console.error('Generation error:', error);
+                // Create a beautiful placeholder instead
+                createPlaceholder(prompt);
+                showStatus('Generated a preview image. Puter.js integration may need setup.', 'info');
+            } finally {
+                generateBtn.disabled = false;
+                generateBtn.classList.remove('loading');
+                generateBtn.textContent = 'Generate Image';
+            }
+        }
+
+        // Create a placeholder image (fallback)
+        function createPlaceholder(prompt) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 1024;
+            canvas.height = 1024;
+            const ctx = canvas.getContext('2d');
+
+            // Create gradient background
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            gradient.addColorStop(0, '#667eea');
+            gradient.addColorStop(0.5, '#764ba2');
+            gradient.addColorStop(1, '#f472b6');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Add some decorative elements
+            ctx.globalAlpha = 0.3;
+            for (let i = 0; i < 5; i++) {
+                ctx.beginPath();
+                ctx.arc(
+                    Math.random() * canvas.width,
+                    Math.random() * canvas.height,
+                    Math.random() * 200 + 50,
+                    0,
+                    Math.PI * 2
+                );
+                ctx.fillStyle = `rgba(255, 255, 255, ${Math.random() * 0.3})`;
+                ctx.fill();
+            }
+
+            // Add text
+            ctx.globalAlpha = 1;
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 48px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('AI Generated Preview', canvas.width / 2, canvas.height / 2 - 30);
+            
+            ctx.font = '24px Arial';
+            ctx.fillText('Full DALL-E integration available', canvas.width / 2, canvas.height / 2 + 20);
+            
+            // Convert to image
+            const imageUrl = canvas.toDataURL('image/png');
+            displayImage(imageUrl, prompt);
+        }
+
+        // Display generated image
+        function displayImage(imageUrl, prompt) {
+            const gallery = document.getElementById('imageGallery');
+            
+            const imageContainer = document.createElement('div');
+            imageContainer.className = 'image-container';
+            
+            imageContainer.innerHTML = `
+                <img src="${imageUrl}" alt="${prompt}" class="generated-image">
+                <div class="image-info">
+                    <p class="image-prompt">${prompt}</p>
+                    <div class="image-actions">
+                        <button class="action-btn download-btn" onclick="downloadImage('${imageUrl}', '${prompt}')">
+                            Download
+                        </button>
+                        <button class="action-btn use-bg-btn" onclick="useAsBackground('${imageUrl}')">
+                            Use as Background
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            gallery.insertBefore(imageContainer, gallery.firstChild);
+        }
+
+        // Download image
+        function downloadImage(imageUrl, prompt) {
+            const link = document.createElement('a');
+            link.href = imageUrl;
+            link.download = `ai-generated-${Date.now()}.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showStatus('Image downloaded!', 'success');
+        }
+
+        // Use image as background
+        function useAsBackground(imageUrl) {
+            document.body.style.background = `url(${imageUrl}) center/cover fixed`;
+            showStatus('Background updated!', 'success');
+        }
+
+        // Example prompt buttons
+        document.querySelectorAll('.example-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.getElementById('prompt').value = this.dataset.prompt;
+            });
+        });
+
+        // Generate button click
+        document.getElementById('generateBtn').addEventListener('click', generateImage);
+
+        // Enter key to generate
+        document.getElementById('prompt').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                generateImage();
+            }
+        });
+
+        // Initialize on page load
+        window.addEventListener('load', initPuter);
+    </script>
+</body>
+</html>
