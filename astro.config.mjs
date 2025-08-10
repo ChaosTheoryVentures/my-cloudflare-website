@@ -4,16 +4,14 @@ import react from '@astrojs/react';
 import tailwind from '@astrojs/tailwind';
 
 export default defineConfig({
-  output: 'server',
-  adapter: cloudflare({
-    platformProxy: {
-      enabled: true
-    }
-  }),
+  output: 'static',
   integrations: [react(), tailwind()],
+  build: {
+    assets: '_astro'
+  },
   vite: {
     define: {
-      __CLOUDFLARE_PAGES__: process.env.CF_PAGES === '1'
+      __CLOUDFLARE_WORKERS__: 'true'
     }
   }
 });
